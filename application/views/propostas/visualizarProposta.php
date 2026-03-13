@@ -109,7 +109,7 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        var clienteNome = '<?php echo addslashes($clienteNome); ?>';
+                        var clienteNome = <?php echo json_encode($clienteNome); ?>;
                         var numeroProposta = '<?php echo $numeroProposta; ?>';
                         var valorTotal = '<?php echo $valorTotal; ?>';
                         var pdfUrl = response.url;
