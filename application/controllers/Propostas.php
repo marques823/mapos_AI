@@ -726,6 +726,16 @@ class Propostas extends MY_Controller
         $this->load->model('mapos_model');
         $this->data['emitente'] = $this->mapos_model->getEmitente();
 
+        // QR Code Pix (se disponível)
+        if (isset($this->data['configuration']['pix_key']) && $this->data['configuration']['pix_key']) {
+            $this->data['qrCode'] = $this->propostas_model->getQrCode(
+                $result->idProposta,
+                $this->data['configuration']['pix_key'],
+                $this->data['emitente']
+            );
+            $this->data['chaveFormatada'] = $this->formatarChave($this->data['configuration']['pix_key']);
+        }
+
         $this->load->helper('mpdf');
         
         // Usar view específica para PDF (layout simples)
@@ -777,6 +787,16 @@ class Propostas extends MY_Controller
         $this->data['outros'] = $this->propostas_model->getOutros($result->idProposta);
         $this->load->model('mapos_model');
         $this->data['emitente'] = $this->mapos_model->getEmitente();
+
+        // QR Code Pix (se disponível)
+        if (isset($this->data['configuration']['pix_key']) && $this->data['configuration']['pix_key']) {
+            $this->data['qrCode'] = $this->propostas_model->getQrCode(
+                $result->idProposta,
+                $this->data['configuration']['pix_key'],
+                $this->data['emitente']
+            );
+            $this->data['chaveFormatada'] = $this->formatarChave($this->data['configuration']['pix_key']);
+        }
 
         $this->load->helper('mpdf');
         
