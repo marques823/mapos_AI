@@ -605,6 +605,14 @@ class PropostasController extends REST_Controller
         $this->load->helper('mpdf');
         $html = $this->load->view('propostas/imprimirProposta', $this->data, true);
         $html = preg_replace('/<script[^>]*>[\s\S]*?window\.print\(\)[\s\S]*?<\/script>/i', '', $html);
+        // mPDF: neutraliza as quebras/alturas de @media print da view, que geram
+        // páginas em branco e empurram o rodapé para uma página extra.
+        $pdf_css = '<style>'
+            . 'html,body{width:auto !important;height:auto !important;background:#fff !important;}'
+            . '.main-page{margin:0 !important;padding:0 !important;page-break-after:auto !important;box-shadow:none !important;background:#fff !important;}'
+            . 'footer{page-break-before:auto !important;}'
+            . '</style>';
+        $html = preg_replace('/<\/head>/i', $pdf_css . '</head>', $html, 1);
 
         $numeroProposta = $result->numero_proposta ?: $result->idProposta;
         $numeroProposta = preg_replace('/[^0-9]/', '', $numeroProposta);
@@ -649,6 +657,102 @@ class PropostasController extends REST_Controller
      * aplica valor_desconto e atualiza propostas.valor_total.
      * Garante que a listagem exiba o total corretamente após criar/editar via API.
      */
+    /**
+     * BOM-BOT: cria uma OS em status Orçamento vinculada à proposta, sem baixar estoque.
+     * POST /api/v1/propostas/{id}/os
+     */
+    public function os_post($id)
+    {
+        $this->logged_user();
+        if (! $this->permission->checkPermission($this->logged_user()->level, 'aOs')) {
+            $this->response([
+                'status' => false,
+                'message' => 'Você não está autorizado a criar OS.',
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        $proposta = $this->propostas_model->getById($id);
+        if (! $proposta) {
+            $this->response(['status' => false, 'message' => 'Proposta não encontrada.'], REST_Controller::HTTP_NOT_FOUND);
+        }
+
+        $clientes_id = ! empty($input['clientes_id']) ? (int) $input['clientes_id'] : (int) $proposta->clientes_id;
+        if (! $clientes_id) {
+            $this->response(['status' => false, 'message' => 'Proposta sem cliente cadastrado; informe clientes_id.'], REST_Controller::HTTP_BAD_REQUEST);
+        }
+
+        $this->load->model('os_model');
+        $this->load->model('produtos_model');
+
+        $itens = isset($input['itens']) && is_array($input['itens']) ? $input['itens'] : [];
+        $labor = isset($input['labor']) ? (float) $input['labor'] : 0.0;
+        $totalItens = 0.0;
+        foreach ($itens as $it) {
+            $totalItens += ((float) ($it['preco'] ?? 0)) * ((float) ($it['quantidade'] ?? 0));
+        }
+
+        $data = [
+            'dataInicial' => date('Y-m-d'),
+            'dataFinal' => date('Y-m-d'),
+            'garantia' => isset($input['garantia']) ? (string) (int) $input['garantia'] : '90',
+            'descricaoProduto' => (string) ($input['descricaoProduto'] ?? ''),
+            'defeito' => (string) ($input['defeito'] ?? ''),
+            'status' => (string) ($input['status'] ?? 'Orçamento'),
+            'observacoes' => (string) ($input['observacoes'] ?? ''),
+            'laudoTecnico' => '',
+            'clientes_id' => $clientes_id,
+            'usuarios_id' => (int) $this->logged_user()->usuario->idUsuarios,
+            'valorTotal' => round($totalItens + $labor, 2),
+            'faturado' => 0,
+            'garantias_id' => null,
+        ];
+
+        $idOs = $this->os_model->add('os', $data, true);
+        if (! $idOs) {
+            $this->response(['status' => false, 'message' => 'Não foi possível criar a OS.'], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        foreach ($itens as $it) {
+            $pid = (int) ($it['produtos_id'] ?? 0);
+            $qtd = (float) ($it['quantidade'] ?? 0);
+            $preco = (float) ($it['preco'] ?? 0);
+            if ($pid <= 0 || $qtd <= 0) {
+                continue;
+            }
+            $this->db->insert('produtos_os', [
+                'produtos_id' => $pid,
+                'quantidade' => $qtd,
+                'preco' => $preco,
+                'subTotal' => round($preco * $qtd, 2),
+                'os_id' => $idOs,
+                'estoque_consumido' => 0,
+                'descricao' => mb_substr((string) ($it['descricao'] ?? ''), 0, 80),
+            ]);
+        }
+
+        if ($labor > 0) {
+            $this->db->insert('servicos_os', [
+                'servico' => 'Mão de obra, instalação e configuração',
+                'quantidade' => 1,
+                'preco' => $labor,
+                'subTotal' => $labor,
+                'os_id' => $idOs,
+                'servicos_id' => null,
+                'detalhes' => '',
+            ]);
+        }
+
+        $this->db->where('idProposta', (int) $id)->update('propostas', ['os_id' => $idOs]);
+        $this->log_app('BOM-BOT: criou OS ' . $idOs . ' a partir da proposta ' . $id . '.');
+
+        $this->response([
+            'status' => true,
+            'message' => 'OS criada e vinculada à proposta.',
+            'result' => ['idOs' => (int) $idOs, 'proposta_id' => (int) $id, 'total' => round($totalItens + $labor, 2)],
+        ], REST_Controller::HTTP_CREATED);
+    }
+
     private function atualizarValorTotalProposta($idProposta)
     {
         $proposta = $this->propostas_model->getById($idProposta);

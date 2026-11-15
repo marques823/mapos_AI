@@ -67,11 +67,11 @@
         </li>
     <?php endif ?>
 
-    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vOs')) : ?>
+    <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vPropostas')) : ?>
         <li class="card">
-            <a class="cardLink" href="<?= site_url('os') ?>">
+            <a class="cardLink" href="<?= site_url('propostas/gerenciar') ?>">
                 <div class="grid-blak">
-                    <div class="numbers N-tittle">Ordens</div>
+                    <div class="numbers N-tittle">Propostas Comerciais</div>
                     <div class="cardName">F4</div>
                 </div>
                 <div class="lord-icon04">

@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="<?= base_url() ?>assets/css/matrix-login.css" />
   <link href="<?= base_url(); ?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
   <link rel="shortcut icon" type="image/png" href="<?= base_url(); ?>assets/img/favicon.png" />
+  <?php $mobileCss = FCPATH . 'assets/css/responsive-mobile.css'; ?>
+  <link rel="stylesheet" href="<?= base_url(); ?>assets/css/responsive-mobile.css?<?= is_file($mobileCss) ? filemtime($mobileCss) : time() ?>" />
 </head>
 
 <body>

@@ -8,6 +8,8 @@
 <!--end-Footer-part-->
 <script src="<?= base_url() ?>assets/js/bootstrap.min.js"></script>
 <script src="<?= base_url() ?>assets/js/matrix.js"></script>
+<?php $mobileJs = FCPATH . 'assets/js/mobile.js'; ?>
+<script src="<?= base_url() ?>assets/js/mobile.js?<?= is_file($mobileJs) ? filemtime($mobileJs) : time() ?>"></script>
 </body>
 <script type="text/javascript">
     $(document).ready(function() {

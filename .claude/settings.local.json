@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"$_NV\\\\[\" /opt/lampp/htdocs/mapos/application/views/mapos/configurar.php)",
+      "Bash(sudo chmod:*)",
+      "Bash(mysql:*)",
+      "Bash(grep -r \"password\\\\|senha\" /home/tiago/clawd/skills/mapos/*.ps1)",
+      "Bash(curl:*)",
+      "Bash(python3 -m json.tool)"
+    ]
+  }
+}

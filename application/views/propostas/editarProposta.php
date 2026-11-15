@@ -453,7 +453,7 @@ $(document).ready(function() {
         <?php foreach ($produtos as $p) { ?>
             produtos.push({
                 produtos_id: <?php echo $p->produtos_id ? $p->produtos_id : 'null'; ?>,
-                descricao: "<?php echo addslashes($p->descricao); ?>",
+                descricao: <?php echo json_encode($p->descricao); ?>,
                 quantidade: <?php echo floatval($p->quantidade); ?>,
                 preco: <?php echo floatval($p->preco); ?>,
                 subtotal: <?php echo floatval($p->subtotal); ?>
@@ -466,7 +466,7 @@ $(document).ready(function() {
         <?php foreach ($servicos as $s) { ?>
             servicos.push({
                 servicos_id: <?php echo $s->servicos_id ? $s->servicos_id : 'null'; ?>,
-                descricao: "<?php echo addslashes($s->descricao); ?>",
+                descricao: <?php echo json_encode($s->descricao); ?>,
                 quantidade: <?php echo floatval($s->quantidade); ?>,
                 preco: <?php echo floatval($s->preco); ?>,
                 subtotal: <?php echo floatval($s->subtotal); ?>
@@ -481,7 +481,7 @@ $(document).ready(function() {
                 numero: <?php echo intval($p->numero); ?>,
                 dias: <?php echo intval($p->dias); ?>,
                 valor: <?php echo floatval($p->valor); ?>,
-                observacao: "<?php echo addslashes($p->observacao); ?>"
+                observacao: <?php echo json_encode($p->observacao); ?>
             });
         <?php } ?>
     <?php } ?>
@@ -502,7 +502,7 @@ $(document).ready(function() {
         // Carregar outros produtos/serviços
         <?php if (!empty($outros) && count($outros) > 0) { ?>
             if ($("#descricao_outros").length) {
-                $("#descricao_outros").val("<?php echo addslashes($outros[0]->descricao); ?>");
+                $("#descricao_outros").val(<?php echo json_encode($outros[0]->descricao); ?>);
             }
             if ($("#preco_outros").length) {
                 $("#preco_outros").val("<?php echo number_format($outros[0]->preco, 2, ',', '.'); ?>").maskMoney('mask');
@@ -511,7 +511,7 @@ $(document).ready(function() {
         
         // Carregar observações
         if ($("#observacoes").length) {
-            $("#observacoes").val("<?php echo addslashes($result->observacoes ?: ''); ?>");
+            $("#observacoes").val(<?php echo json_encode($result->observacoes ?: ''); ?>);
         }
         
         // Carregar valores totais
@@ -534,7 +534,7 @@ $(document).ready(function() {
             $("#tipo_cond_comerc").trigger('change');
         }
         if ($("#cond_comerc_texto").length) {
-            $("#cond_comerc_texto").val("<?php echo addslashes($result->cond_comerc_texto ?: ''); ?>");
+            $("#cond_comerc_texto").val(<?php echo json_encode($result->cond_comerc_texto ?: ''); ?>);
         }
         
         // Se tipo for Parcelas e já existirem parcelas, mostrar tabela
@@ -549,7 +549,7 @@ $(document).ready(function() {
             $("#validade_dias").val("<?php echo $result->validade_dias ?: ''; ?>");
         }
         if ($("#prazo_entrega").length) {
-            $("#prazo_entrega").val("<?php echo addslashes($result->prazo_entrega ?: ''); ?>");
+            $("#prazo_entrega").val(<?php echo json_encode($result->prazo_entrega ?: ''); ?>);
         }
         
         atualizarResumo();

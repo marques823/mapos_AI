@@ -2,11 +2,14 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proposta Comercial - <?php echo $result->numero_proposta ?: '#' . $result->idProposta; ?></title>
+    <script src="<?php echo base_url(); ?>assets/js/jquery-1.12.4.min.js"></script>
     <style>
         @media print {
             .no-print { display: none !important; }
             body { margin: 0; padding: 0; }
+            table { display: table !important; overflow: visible !important; }
         }
         body {
             font-family: Arial, sans-serif;
@@ -77,14 +80,82 @@
             text-align: center;
         }
         .actions button, .actions a {
-            margin: 0 10px;
+            display: inline-block;
+            margin: 0 6px 6px 0;
             padding: 10px 20px;
             font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f8f8f8;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .actions button:hover, .actions a:hover {
+            background: #eee;
+        }
+        @media (max-width: 768px) {
+            body {
+                margin: 12px;
+                font-size: 13px;
+                overflow-x: hidden;
+            }
+            .header {
+                margin-bottom: 18px;
+                padding-bottom: 12px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .header h2 {
+                font-size: 15px;
+            }
+            .info-box {
+                flex-direction: column;
+                gap: 12px;
+                margin: 14px 0;
+            }
+            .info-box .left, .info-box .right {
+                width: 100%;
+            }
+            .actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .actions button, .actions a {
+                width: 100%;
+                margin: 0;
+                padding: 12px 8px;
+                font-size: 13px;
+            }
+            table {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                font-size: 12px;
+            }
+            table th, table td {
+                padding: 6px;
+            }
+            table[style*="width: 50%"] {
+                width: 100% !important;
+                margin-top: 12px;
+            }
+            table td[style*="width: 200px"] {
+                width: auto !important;
+            }
+            .footer {
+                margin-top: 24px;
+                padding-top: 12px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="actions no-print">
+        <a href="<?php echo base_url(); ?>index.php/propostas/gerenciar">&larr; Voltar</a>
         <button onclick="window.print()">Imprimir</button>
         <a href="<?php echo base_url(); ?>index.php/propostas/imprimir/<?php echo $result->idProposta; ?>" target="_blank">Visualizar para Impressão</a>
         <a href="<?php echo base_url(); ?>index.php/propostas/gerarPdf/<?php echo $result->idProposta; ?>" target="_blank">Salvar PDF</a>
@@ -109,7 +180,7 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        var clienteNome = '<?php echo addslashes($clienteNome); ?>';
+                        var clienteNome = <?php echo json_encode($clienteNome); ?>;
                         var numeroProposta = '<?php echo $numeroProposta; ?>';
                         var valorTotal = '<?php echo $valorTotal; ?>';
                         var pdfUrl = response.url;
@@ -129,8 +200,9 @@
             });
         }
         </script>
+        <?php $telBot = $result->celular_cliente ? preg_replace('/[^0-9]/', '', $result->celular_cliente) : ''; ?>
+        <a href="https://t.me/proposta823_bot?start=<?php echo $numeroProposta . ($telBot ? '-' . $telBot : ''); ?>" target="_blank">Enviar pelo Bot</a>
         <a href="<?php echo base_url(); ?>index.php/propostas/editar/<?php echo $result->idProposta; ?>">Editar</a>
-        <a href="<?php echo base_url(); ?>index.php/propostas">Voltar</a>
     </div>
 
     <div class="header">
@@ -368,7 +440,7 @@
         <div style="margin-top: 30px;">
             <h3>OBSERVAÇÕES</h3>
             <p style="text-align: justify; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px;">
-                <?php echo nl2br($result->observacoes); ?>
+                <?php echo nl2br(htmlspecialchars($result->observacoes)); ?>
             </p>
         </div>
     <?php } ?>
@@ -377,7 +449,14 @@
         <p style="text-align: center; margin-top: 40px;">
             <?php if ($emitente) { ?>
                 <strong><?php echo $emitente->nome; ?></strong><br>
-                <?php if ($emitente->telefone) { echo $emitente->telefone . '<br>'; } ?>
+                <?php
+                    $telefoneContato = $result->telefone_usuario ?? '';
+                    if ($telefoneContato) {
+                        echo $telefoneContato . '<br>';
+                    } elseif ($emitente->telefone) {
+                        echo $emitente->telefone . '<br>';
+                    }
+                ?>
                 <?php if ($emitente->email) { echo $emitente->email . '<br>'; } ?>
                     <?php if ($emitente->rua || $emitente->cidade) { 
                         echo trim(($emitente->rua ? $emitente->rua . ', ' : '') . ($emitente->numero ? $emitente->numero : '') . ($emitente->bairro ? ' - ' . $emitente->bairro : '') . ($emitente->cidade ? ' - ' . $emitente->cidade : '') . (isset($emitente->estado) && $emitente->estado ? '/' . $emitente->estado : '') . (isset($emitente->cep) && $emitente->cep ? ' - CEP: ' . $emitente->cep : '')); 
@@ -387,4 +466,3 @@
     </div>
 </body>
 </html>
-
