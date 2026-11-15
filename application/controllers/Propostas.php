@@ -134,13 +134,13 @@ class Propostas extends MY_Controller
                 'clientes_id' => $clienteId,
                 'cliente_nome' => $clienteNome,
                 'usuarios_id' => $this->input->post('usuarios_id') ?: $this->session->userdata('id_admin'),
-                'observacoes' => $this->input->post('observacoes'),
+                'observacoes' => $this->input->post('observacoes', false),
                 'desconto' => $desconto,
                 'valor_desconto' => $this->input->post('valor_desconto') ?: 0,
                 'tipo_desconto' => $this->input->post('tipo_desconto'),
                 'valor_total' => $this->input->post('valor_total') ?: 0,
                 'tipo_cond_comerc' => $this->input->post('tipo_cond_comerc') ?: 'N',
-                'cond_comerc_texto' => $this->input->post('cond_comerc_texto'),
+                'cond_comerc_texto' => $this->input->post('cond_comerc_texto', false),
                 'validade_dias' => $this->input->post('validade_dias') ?: null,
                 'prazo_entrega' => $this->input->post('prazo_entrega'),
             ];
@@ -240,13 +240,13 @@ class Propostas extends MY_Controller
                 'clientes_id' => $clienteId,
                 'cliente_nome' => $clienteNome,
                 'usuarios_id' => $this->input->post('usuarios_id'),
-                'observacoes' => $this->input->post('observacoes'),
+                'observacoes' => $this->input->post('observacoes', false),
                 'desconto' => $desconto,
                 'valor_desconto' => $this->input->post('valor_desconto') ?: 0,
                 'tipo_desconto' => $this->input->post('tipo_desconto'),
                 'valor_total' => $this->input->post('valor_total') ?: 0,
                 'tipo_cond_comerc' => $this->input->post('tipo_cond_comerc') ?: 'N',
-                'cond_comerc_texto' => $this->input->post('cond_comerc_texto'),
+                'cond_comerc_texto' => $this->input->post('cond_comerc_texto', false),
                 'validade_dias' => $this->input->post('validade_dias') ?: null,
                 'prazo_entrega' => $this->input->post('prazo_entrega'),
             ];
@@ -657,8 +657,7 @@ class Propostas extends MY_Controller
         $this->load->model('mapos_model');
         $this->data['emitente'] = $this->mapos_model->getEmitente();
 
-        $this->data['view'] = 'propostas/visualizarProposta';
-        return $this->layout();
+        $this->load->view('propostas/visualizarProposta', $this->data);
     }
 
     public function imprimir()

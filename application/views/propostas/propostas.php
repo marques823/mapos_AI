@@ -22,6 +22,7 @@
         background-color: #fff;
         border-color: #ddd;
         border-bottom-color: #fff;
+        color: var(--white-gre2, #333);
         font-weight: bold;
     }
     #statusTabs li:not(.active) a:hover {
@@ -81,15 +82,30 @@
         margin-right: 8px;
         width: 18px;
     }
-    /* Garantir que o menu não seja cortado */
-    .table-responsive {
-        overflow: visible !important;
+    /* Garantir que o menu de ações não seja cortado (somente desktop) */
+    @media (min-width: 1024px) {
+        .table-responsive {
+            overflow: visible !important;
+        }
+        .widget-content {
+            overflow: visible !important;
+        }
+        .table tbody tr td:first-child {
+            overflow: visible !important;
+        }
     }
-    .widget-content {
-        overflow: visible !important;
-    }
-    .table tbody tr td:first-child {
-        overflow: visible !important;
+    /* Celular e tablet usam o menu de ações em modal */
+    @media (max-width: 1023px) {
+        .menu-desktop {
+            display: none !important;
+        }
+        .btn-menu-acoes {
+            padding: 8px 12px !important;
+            font-size: 20px !important;
+        }
+        #tabelaPropostas {
+            min-width: 900px;
+        }
     }
     /* Estilos responsivos para mobile */
     @media (max-width: 768px) {
@@ -103,8 +119,39 @@
         .table tbody tr td:first-child {
             width: 60px !important;
         }
+        .table-responsive {
+            overflow-x: auto !important;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        .widget-content {
+            overflow-x: auto !important;
+            max-width: 100%;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        #statusTabs {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+            padding-bottom: 2px;
+        }
+        #statusTabs > li {
+            float: none;
+            flex: 0 0 auto;
+        }
+        #statusTabs > li > a {
+            white-space: nowrap;
+        }
+        #tabelaPropostas {
+            min-width: 900px;
+        }
     }
-    @media (min-width: 769px) {
+    @media (min-width: 1024px) {
         .modal-menu-mobile {
             display: none !important;
         }
@@ -385,7 +432,7 @@
     <div class="widget-box" style="margin-top: 8px">
         <div class="widget-content nopadding">
             <div class="table-responsive">
-                <table class="table table-bordered ">
+                <table class="table table-bordered" id="tabelaPropostas">
                     <thead>
                         <tr>
                             <th style="width: 50px;"></th>
@@ -442,6 +489,11 @@
                                                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'vPropostas')) { ?>
                                                     <li><a href="<?php echo base_url(); ?>index.php/propostas/visualizar/<?php echo $r->idProposta; ?>" target="_blank" style="display: block; padding: 8px 15px; color: #333; text-decoration: none;"><i class="bx bx-show"></i> Visualizar</a></li>
                                                     <li><a href="<?php echo base_url(); ?>index.php/propostas/imprimir/<?php echo $r->idProposta; ?>" target="_blank" style="display: block; padding: 8px 15px; color: #333; text-decoration: none;"><i class="bx bx-printer"></i> Imprimir</a></li>
+                                                    <?php
+                                                    $telBot = $r->celular_cliente ? preg_replace('/[^0-9]/', '', $r->celular_cliente) : '';
+                                                    $linkBot = 'https://t.me/proposta823_bot?start=' . $numeroProposta . ($telBot ? '-' . $telBot : '');
+                                                    ?>
+                                                    <li><a href="<?php echo $linkBot; ?>" target="_blank" style="display: block; padding: 8px 15px; color: #333; text-decoration: none;"><i class="bx bx-send"></i> Enviar pelo Bot</a></li>
                                                 <?php } ?>
                                                 <?php if ($this->permission->checkPermission($this->session->userdata('permissao'), 'ePropostas')) { ?>
                                                     <li><a href="<?php echo base_url(); ?>index.php/propostas/editar/<?php echo $r->idProposta; ?>" style="display: block; padding: 8px 15px; color: #333; text-decoration: none;"><i class="bx bx-edit"></i> Editar</a></li>
@@ -592,8 +644,8 @@
         
         // Função para toggle do menu
         window.toggleMenuAcoes = function(id) {
-            // Verificar se é mobile
-            if ($(window).width() <= 768) {
+            // Verificar se é mobile/tablet
+            if ($(window).width() <= 1023) {
                 // Mobile: usar modal
                 abrirMenuMobile(id);
             } else {
@@ -673,8 +725,8 @@
             }
         });
 
-        // Capturar clique no link de excluir ANTES de abrir o modal
-        $('a[href="#modalExcluir"]').on('click', function(e) {
+        // Capturar clique no link de excluir (inclusive itens clonados no menu mobile)
+        $(document).on('click', 'a[href="#modalExcluir"]', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
