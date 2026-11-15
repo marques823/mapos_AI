@@ -31,6 +31,10 @@ $route['api/v1/propostas/(:num)/produtos'] = 'api/v1/PropostasController/produto
 $route['api/v1/propostas/(:num)/servicos'] = 'api/v1/PropostasController/servicos/$1';
 $route['api/v1/propostas/(:num)/outros'] = 'api/v1/PropostasController/outros/$1';
 $route['api/v1/propostas/(:num)'] = 'api/v1/PropostasController/index/$1';
+// BOM-BOT: cria OS vinculada a uma proposta
+$route['api/v1/propostas/(:num)/os'] = 'api/v1/PropostasController/os/$1';
+// BOM-BOT: importa cotação (produtos + estoque)
+$route['api/v1/produtos/importar-cotacao'] = 'api/v1/ProdutosController/importar_cotacao';
 $route['api/v1/os/(:num)/produtos'] = 'api/v1/OsController/produtos/$1';
 $route['api/v1/os/(:num)/produtos/(:num)'] = 'api/v1/OsController/produtos/$1/$2';
 $route['api/v1/os/(:num)/servicos'] = 'api/v1/OsController/servicos/$1';

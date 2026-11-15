@@ -176,6 +176,105 @@ class ProdutosController extends REST_Controller
         ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * BOM-BOT: importa itens de cotação.
+     * Cria/atualiza produtos e soma estoque sem sobrescrever a quantidade atual.
+     * POST /api/v1/produtos/importar-cotacao
+     */
+    public function importar_cotacao_post()
+    {
+        $this->logged_user();
+        if (! $this->permission->checkPermission($this->logged_user()->level, 'aProduto')) {
+            $this->response(['status' => false, 'message' => 'Sem permissão para importar produtos.'], REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        $itens = isset($input['itens']) && is_array($input['itens']) ? $input['itens'] : [];
+        $markup = isset($input['markup_percent']) ? (float) $input['markup_percent'] : 43.0;
+        $fornecedor = (string) ($input['fornecedor'] ?? '');
+        $referencia = (string) ($input['referencia'] ?? '');
+        $resultados = [];
+
+        foreach ($itens as $it) {
+            $descricao = trim((string) ($it['descricao'] ?? ''));
+            $codigo = trim((string) ($it['codigo'] ?? ''));
+            $ean = trim((string) ($it['ean'] ?? ''));
+            $unidade = trim((string) ($it['unidade'] ?? 'UN')) ?: 'UN';
+            $qtd = (float) ($it['quantidade'] ?? 0);
+            $compra = (float) ($it['preco_compra'] ?? 0);
+            $venda = (float) ($it['preco_venda'] ?? 0);
+            $acao = (string) ($it['acao'] ?? 'novo');
+            $somar = ! empty($it['adicionar_estoque']);
+            $produtoId = (int) ($it['produto_id'] ?? 0);
+
+            if ($descricao === '' || $qtd <= 0 || $compra < 0) {
+                $resultados[] = ['ok' => false, 'cotacao_item_id' => $it['cotacao_item_id'] ?? null,
+                    'descricao' => $descricao, 'erro' => 'Descrição/quantidade/preço inválidos'];
+                continue;
+            }
+            if ($venda <= 0) {
+                $venda = round($compra * (1 + $markup / 100), 2);
+            }
+
+            // Localiza por id, código de barras ou EAN antes de criar
+            $existente = null;
+            if ($produtoId > 0) {
+                $existente = $this->produtos_model->getById($produtoId);
+            }
+            if (! $existente && ($codigo !== '' || $ean !== '')) {
+                $chave = $codigo !== '' ? $codigo : $ean;
+                $existente = $this->db->get_where('produtos', ['codDeBarra' => $chave])->row();
+            }
+
+            if ($existente) {
+                $this->db->where('idProdutos', $existente->idProdutos);
+                $this->db->update('produtos', [
+                    'precoCompra' => $compra,
+                    'precoVenda' => $venda,
+                ]);
+                if ($somar) {
+                    $this->db->query('UPDATE produtos SET estoque = estoque + ? WHERE idProdutos = ?', [$qtd, $existente->idProdutos]);
+                }
+                $novo = $this->produtos_model->getById($existente->idProdutos);
+                $resultados[] = ['ok' => true, 'cotacao_item_id' => $it['cotacao_item_id'] ?? null,
+                    'produto_id' => (int) $existente->idProdutos, 'acao' => 'atualizado',
+                    'descricao' => $existente->descricao, 'estoque' => (float) $novo->estoque];
+                continue;
+            }
+
+            if ($acao === 'ambiguo') {
+                $resultados[] = ['ok' => false, 'cotacao_item_id' => $it['cotacao_item_id'] ?? null,
+                    'descricao' => $descricao, 'erro' => 'Item ambíguo: confirme o produto'];
+                continue;
+            }
+
+            $cod = $codigo !== '' ? mb_substr($codigo, 0, 70) : ('COT-' . date('YmdHis') . '-' . count($resultados));
+            $dados = [
+                'codDeBarra' => $cod,
+                'descricao' => mb_substr($descricao, 0, 80),
+                'unidade' => mb_substr($unidade, 0, 10),
+                'precoCompra' => $compra,
+                'precoVenda' => $venda,
+                'estoque' => $somar ? $qtd : 0,
+                'estoqueMinimo' => 0,
+                'saida' => 1,
+                'entrada' => 1,
+            ];
+            $this->db->insert('produtos', $dados);
+            $novoId = (int) $this->db->insert_id();
+            if (! $novoId) {
+                $resultados[] = ['ok' => false, 'cotacao_item_id' => $it['cotacao_item_id'] ?? null,
+                    'descricao' => $descricao, 'erro' => 'Falha ao cadastrar produto'];
+                continue;
+            }
+            $resultados[] = ['ok' => true, 'cotacao_item_id' => $it['cotacao_item_id'] ?? null,
+                'produto_id' => (int) $novoId, 'acao' => 'criado', 'descricao' => $descricao, 'estoque' => $somar ? $qtd : 0];
+        }
+
+        $this->log_app('BOM-BOT: importou cotação de ' . $fornecedor . ' (' . $referencia . ') com ' . count($resultados) . ' item(ns).');
+        $this->response(['status' => true, 'message' => 'Importação concluída.', 'result' => $resultados], REST_Controller::HTTP_CREATED);
+    }
+
     public function index_delete($id)
     {
         $this->logged_user();

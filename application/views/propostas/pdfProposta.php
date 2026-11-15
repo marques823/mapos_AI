@@ -52,7 +52,8 @@
                         </span>
                     </div>
                     <div class="contatoEmitente">
-                        <span style="font-weight: bold;">Tel: <?= $emitente->telefone ?></span></br>
+                        <?php $telefoneContato = !empty($result->telefone_usuario) ? $result->telefone_usuario : $emitente->telefone; ?>
+                        <span style="font-weight: bold;">Tel: <?= $telefoneContato ?></span></br>
                         <span style="font-weight: bold;"><?= $emitente->email ?></span></br>
                     </div>
                 <?php endif; ?>

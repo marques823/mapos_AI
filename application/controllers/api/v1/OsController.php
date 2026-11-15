@@ -470,7 +470,15 @@ class OsController extends REST_Controller
 
             $this->load->model('produtos_model');
 
-            $this->produtoEstoque($this->post('idProduto', true), $this->post('quantidade', true), '-');
+            // BOM-BOT: só movimenta estoque quando o status da OS exige (alinha com a tela)
+            if (! in_array($os->status, ['Orçamento', 'Negociação'])) {
+                $this->produtoEstoque($this->post('idProduto', true), $this->post('quantidade', true), '-');
+                $this->db->where('idProdutos_os', $lastProdutoOs->idProdutos_os);
+                $this->db->update('produtos_os', ['estoque_consumido' => 1]);
+            } else {
+                $this->db->where('idProdutos_os', $lastProdutoOs->idProdutos_os);
+                $this->db->update('produtos_os', ['estoque_consumido' => 0]);
+            }
 
             $this->db->set('desconto', 0.00);
             $this->db->set('valor_desconto', 0.00);

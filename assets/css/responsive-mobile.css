@@ -1,0 +1,447 @@
+/* ==========================================================================
+   MapOS - camada responsiva para celular
+   Carregada depois do tema para corrigir rolagem horizontal e usabilidade.
+   ========================================================================== */
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+#content img,
+#content canvas,
+#content svg {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  /* ---------------- Estrutura / menu gaveta ---------------- */
+  body.drawer-open {
+    overflow: hidden;
+  }
+
+  #content {
+    margin-left: 0 !important;
+    padding: 0 12px !important;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  .container-flu,
+  .container-fluid {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .navebarn {
+    margin-left: 0 !important;
+    padding: 8px 12px;
+    gap: 6px;
+    flex-wrap: nowrap;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #userr {
+    padding-right: 0 !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px;
+  }
+
+  #userr .userT0 {
+    display: none;
+  }
+
+  #userr .userT {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1em;
+  }
+
+  .sec_profile {
+    position: static;
+  }
+
+  #user-nav > ul {
+    display: flex;
+    flex-wrap: nowrap;
+    margin: 0 !important;
+  }
+
+  #user-nav > ul > li > a {
+    padding: 6px 5px;
+  }
+
+  #user-nav .dropdown-menu {
+    left: auto;
+    right: 0;
+  }
+
+  #footer {
+    padding: 10px 0 !important;
+    text-align: center;
+  }
+
+  #drawer-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 998;
+  }
+
+  body.drawer-open #drawer-backdrop {
+    display: block;
+  }
+
+  #sidebar .search-box form {
+    width: 100%;
+  }
+
+  #sidebar input[type="search"] {
+    width: auto !important;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ---------------- Grid / colunas ---------------- */
+  .row-fluid {
+    margin-left: 0;
+  }
+
+  .row-fluid [class*="span"] {
+    float: none !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .row-fluid [class*="span"] + [class*="span"] {
+    margin-top: 10px;
+  }
+
+  #content form > [class*="span"] {
+    float: none !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  #content form > [class*="span"] + [class*="span"] {
+    margin-top: 8px;
+  }
+
+  .row-fluid .span6.datepicker + .span6.datepicker {
+    margin-top: 6px;
+  }
+
+  /* ---------------- Cabeçalho / breadcrumb ---------------- */
+  #content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 10px 0;
+  }
+
+  #content-header h1 {
+    width: 100%;
+    margin: 0;
+  }
+
+  #breadcrumb {
+    width: 100%;
+    white-space: normal;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+  #content-header .btn-group {
+    margin: 0 !important;
+    left: 0 !important;
+  }
+
+  /* ---------------- Tabelas: rolagem dentro do card ---------------- */
+  .widget-content {
+    max-width: 100%;
+  }
+
+  .widget-content.mobile-table-scroll,
+  #content .widget-content:has(table) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #content .widget-content.mobile-table-scroll table.table-bordered {
+    min-width: 620px;
+  }
+
+  #tabela,
+  #divLancamentos,
+  #tabelaProdutos,
+  #tabelaServicos,
+  #tabelaParcelas,
+  #tabela-faturamento {
+    min-width: 760px;
+  }
+
+  #tabelaPropostas {
+    min-width: 900px;
+  }
+
+  /* ---------------- Formulários ---------------- */
+  #content label {
+    display: inline-block !important;
+  }
+
+  #content .form-horizontal .control-label,
+  #content .control-group > label,
+  #content .controls > label {
+    display: block !important;
+    float: none !important;
+    width: auto !important;
+    text-align: left;
+    padding-top: 6px;
+  }
+
+  .form-horizontal .controls {
+    margin-left: 0 !important;
+    padding: 4px 0 10px;
+  }
+
+  .form-horizontal .form-actions {
+    padding-left: 10px !important;
+  }
+
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="date"],
+  input[type="url"],
+  input[type="datetime"],
+  textarea,
+  select,
+  .uneditable-input,
+  .input-append,
+  .input-prepend {
+    width: 100% !important;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .input-append input,
+  .input-prepend input {
+    width: calc(100% - 42px) !important;
+  }
+
+  select {
+    min-width: 0;
+  }
+
+  .form-actions .btn,
+  .form-actions .button {
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+  }
+
+  .controls .btn {
+    margin-top: 6px;
+  }
+
+  /* ---------------- Modais ---------------- */
+  .modal {
+    width: auto !important;
+    max-width: calc(100% - 20px);
+    left: 10px !important;
+    right: 10px !important;
+    margin-left: 0 !important;
+  }
+
+  .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  /* ---------------- DataTables ---------------- */
+  .dataTables_filter {
+    position: static !important;
+    float: none !important;
+    width: 100%;
+    margin: 10px 0;
+    text-align: left;
+  }
+
+  .dataTables_filter label {
+    display: block;
+    width: 100%;
+  }
+
+  .dataTables_filter input {
+    width: 100% !important;
+    margin: 4px 0 0 !important;
+    box-sizing: border-box;
+  }
+
+  .dataTables_length {
+    float: none !important;
+    margin: 6px 0;
+  }
+
+  .dataTables_length select {
+    width: auto !important;
+  }
+
+  .dataTables_info {
+    display: none;
+  }
+
+  .dataTables_paginate {
+    float: none !important;
+    text-align: center;
+    margin: 10px 0;
+  }
+
+  .pagination {
+    margin: 8px 0;
+  }
+
+  /* ---------------- Títulos de widget / botões ---------------- */
+  .widget-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    height: auto !important;
+    padding: 8px !important;
+  }
+
+  .widget-title h5 {
+    flex: 1 1 100%;
+    margin: 0 0 4px;
+  }
+
+  .widget-title .buttons {
+    float: none !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+  }
+
+  /* ---------------- Dashboard / calendário ---------------- */
+  .cardBox {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-gap: 10px;
+  }
+
+  .new-bottons {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-gap: 8px;
+    padding: 10px !important;
+  }
+
+  .new-bottons .card {
+    padding: 10px !important;
+  }
+
+  .new-balance,
+  .span12A {
+    grid-template-columns: 1fr !important;
+  }
+
+  .fc-toolbar {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.2em !important;
+  }
+}
+
+/* Celular: mantém o menu fora da tela e desliza ao abrir */
+@media (min-width: 481px) and (max-width: 768px) {
+  #sidebar {
+    width: 270px;
+    margin-left: -270px;
+  }
+
+  #sidebar.open {
+    width: 270px;
+    margin-left: 0;
+  }
+
+  #sidebar > ul,
+  #sidebar > ul > li {
+    width: 100%;
+  }
+
+  #sidebar .search-box input {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .navebarn,
+  #content {
+    margin-left: 0 !important;
+  }
+
+  #content {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  #footer {
+    padding-left: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #content {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .form-horizontal .control-label {
+    padding-top: 4px;
+  }
+
+  .new-bottons {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Recupera rótulos de formulário que o tema escondia no celular */
+  #content label {
+    display: block !important;
+  }
+}
+
+/* Login */
+@media (max-width: 800px) {
+  .main-login,
+  .left-login,
+  .right-login {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}
