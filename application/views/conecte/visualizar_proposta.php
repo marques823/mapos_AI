@@ -22,6 +22,9 @@
                 </div>
                 <div class="span4" style="text-align: right">
                     <span>Proposta: <?php echo $result->numero_proposta ?: $result->idProposta; ?></span><br />
+                    <?php if (!empty($result->assunto)) { ?>
+                        <span><?php echo htmlspecialchars($result->assunto); ?></span><br />
+                    <?php } ?>
                     <span>Data: <?php echo date('d/m/Y', strtotime($result->data_proposta)); ?></span><br />
                     <?php if ($result->data_validade) { ?>
                         <span>Validade: <?php echo date('d/m/Y', strtotime($result->data_validade)); ?></span><br />

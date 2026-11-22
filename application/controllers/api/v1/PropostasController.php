@@ -908,6 +908,7 @@ class PropostasController extends REST_Controller
             'clientes_id'       => $clienteId,
             'cliente_nome'      => $clienteNome,
             'observacoes'       => $opt('observacoes', null),
+            'assunto'           => trim((string) $opt('assunto', '')) ?: null,
             'desconto'          => $desconto,
             'valor_desconto'    => (float) (array_key_exists('valor_desconto', $input) ? $input['valor_desconto'] : ($ant ? ($ant->valor_desconto ?? 0) : 0)),
             'tipo_desconto'     => $opt('tipo_desconto', 'real'),

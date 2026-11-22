@@ -143,6 +143,7 @@ class Propostas extends MY_Controller
                 'cond_comerc_texto' => $this->input->post('cond_comerc_texto', false),
                 'validade_dias' => $this->input->post('validade_dias') ?: null,
                 'prazo_entrega' => $this->input->post('prazo_entrega'),
+                'assunto' => trim((string) $this->input->post('assunto')) ?: null,
             ];
 
             if (is_numeric($id = $this->propostas_model->add('propostas', $data, true))) {
@@ -249,6 +250,7 @@ class Propostas extends MY_Controller
                 'cond_comerc_texto' => $this->input->post('cond_comerc_texto', false),
                 'validade_dias' => $this->input->post('validade_dias') ?: null,
                 'prazo_entrega' => $this->input->post('prazo_entrega'),
+                'assunto' => trim((string) $this->input->post('assunto')) ?: null,
             ];
 
             $idProposta = $this->input->post('idProposta');
@@ -471,6 +473,7 @@ class Propostas extends MY_Controller
         // Preparar dados da nova proposta (copiar tudo exceto ID e número)
         $data = [
             'numero_proposta' => $numeroProposta,
+            'assunto' => $propostaOriginal->assunto,
             'data_proposta' => date('Y-m-d'),
             'data_validade' => $propostaOriginal->data_validade,
             'status' => 'Aberto', // Sempre começar como "Aberto" ao clonar

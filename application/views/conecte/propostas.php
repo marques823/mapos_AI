@@ -50,6 +50,7 @@ if (!$results) {
                     <thead>
                         <tr>
                             <th>Nº</th>
+                            <th>Assunto</th>
                             <th>Responsável</th>
                             <th>Data</th>
                             <th>Validade</th>
@@ -84,6 +85,7 @@ if (!$results) {
 
                             echo '<tr>';
                             echo '<td>' . ($r->numero_proposta ?: $r->idProposta) . '</td>';
+                            echo '<td>' . htmlspecialchars($r->assunto ?? '') . '</td>';
                             echo '<td>' . $r->nome . '</td>';
                             echo '<td>' . $dataProposta . '</td>';
                             echo '<td>' . $dataValidade . '</td>';
