@@ -275,7 +275,7 @@
             <?php } ?>
 
             <div class="span3">
-                <input type="text" name="pesquisa" id="pesquisa" placeholder="Nome do cliente" class="span12" value="<?=set_value('pesquisa')?>">
+                <input type="text" name="pesquisa" id="pesquisa" placeholder="Cliente ou assunto" class="span12" value="<?=set_value('pesquisa')?>">
             </div>
             <div class="span2">
                 <select name="status" id="" class="span12">
@@ -438,6 +438,7 @@
                             <th style="width: 50px;"></th>
                             <th>N°</th>
                             <th>Cliente</th>
+                            <th>Assunto</th>
                             <th>Data</th>
                             <th>Validade</th>
                             <th>Valor Total</th>
@@ -448,7 +449,7 @@
                     <tbody>
                         <?php if (!$results) {
                             echo '<tr>
-                            <td colspan="8" style="text-align: center;">Nenhuma proposta cadastrada</td>
+                            <td colspan="9" style="text-align: center;">Nenhuma proposta cadastrada</td>
                             </tr>';
                         } else {
                             foreach ($results as $r) {
@@ -510,6 +511,7 @@
                                     </td>
                                     <td><?php echo $numeroProposta; ?></td>
                                     <td><?php echo $r->nomeCliente; ?></td>
+                                    <td><?php echo htmlspecialchars($r->assunto ?? ''); ?></td>
                                     <td><?php echo $dataProposta; ?></td>
                                     <td><?php echo $dataValidade; ?></td>
                                     <td><strong>R$ <?php echo $valorTotal; ?></strong></td>

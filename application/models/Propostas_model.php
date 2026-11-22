@@ -57,14 +57,13 @@ class Propostas_model extends CI_Model
         // Condicional de clientes - buscar também em cliente_nome
         if (array_key_exists('pesquisa', $where_array)) {
             $pesquisa = $where_array['pesquisa'];
-            if ($lista_clientes != null && !empty($lista_clientes)) {
-                $this->db->group_start();
-                $this->db->where_in('propostas.clientes_id', $lista_clientes);
-                $this->db->or_like('propostas.cliente_nome', $pesquisa);
-                $this->db->group_end();
-            } else {
-                $this->db->like('propostas.cliente_nome', $pesquisa);
+            $this->db->group_start();
+            $this->db->like('propostas.cliente_nome', $pesquisa);
+            $this->db->or_like('propostas.assunto', $pesquisa);
+            if (!empty($lista_clientes)) {
+                $this->db->or_where_in('propostas.clientes_id', $lista_clientes);
             }
+            $this->db->group_end();
         }
 
         // Condicional data inicial

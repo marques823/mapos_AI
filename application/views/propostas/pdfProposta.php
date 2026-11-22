@@ -71,6 +71,12 @@
                     
                 </div>
 
+                <?php if (!empty($result->assunto)) : ?>
+                    <div style="text-align: center; margin-top: 4px; font-size: 13px; color: #333;">
+                        <?= htmlspecialchars($result->assunto) ?>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($result->data_validade) : ?>
                     <div style="text-align: center; margin: 10px 0; font-weight: bold; color: #d9534f;">
                         Validade: <?= date('d/m/Y', strtotime($result->data_validade)) ?>

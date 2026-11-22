@@ -208,6 +208,9 @@
     <div class="header">
         <h1>PROPOSTA COMERCIAL</h1>
         <h2>N° <?php echo $result->numero_proposta ?: '#' . $result->idProposta; ?></h2>
+        <?php if (!empty($result->assunto)) { ?>
+            <p><?php echo htmlspecialchars($result->assunto); ?></p>
+        <?php } ?>
         <p>Data: <?php echo date('d/m/Y', strtotime($result->data_proposta)); ?></p>
         <?php if ($result->data_validade) { ?>
             <p><strong>Validade: <?php echo date('d/m/Y', strtotime($result->data_validade)); ?></strong></p>

@@ -57,6 +57,10 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="span12" style="margin-left: 0; margin-top: 10px;">
+                            <label for="assunto">Assunto da Proposta</label>
+                            <input id="assunto" class="span12" type="text" name="assunto" maxlength="255" placeholder="Ex.: Manutenção do portão de veículos" value="<?= set_value('assunto') ?>" />
+                        </div>
                     </div>
 
                     <!-- Produtos -->
